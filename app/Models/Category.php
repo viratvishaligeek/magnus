@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\BelongsToTenant;
+use App\Traits\HasSeo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use BelongsToTenant, HasFactory, SoftDeletes;
+    use BelongsToTenant, HasFactory, SoftDeletes, HasSeo;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +48,12 @@ class Category extends Model
     {
         return $this->hasMany(Product::class, 'category_id');
     }
+
+    public function seo()
+    {
+        return $this->morphOne(SeoPlugin::class, 'seoable');
+    }
+
 
     protected $hidden = [
         'tenant_id',

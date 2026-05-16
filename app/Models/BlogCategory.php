@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\BelongsToTenant;
+use App\Traits\HasSeo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BlogCategory extends Model
 {
-    use BelongsToTenant, HasFactory, SoftDeletes;
+    use BelongsToTenant, HasFactory, SoftDeletes, HasSeo;
 
     /**
      * The attributes that are mass assignable.
@@ -38,6 +39,11 @@ class BlogCategory extends Model
     public function postsCount()
     {
         return $this->hasMany(Blog::class, 'category_id')->count();
+    }
+
+    public function seo()
+    {
+        return $this->morphOne(SeoPlugin::class, 'seoable');
     }
 
     protected $hidden = [

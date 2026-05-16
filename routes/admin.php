@@ -3,7 +3,7 @@
 use App\Http\Controllers\Backend\AdvanceModule\RoleController;
 use App\Http\Controllers\Backend\AdvanceModule\TeamController;
 use App\Http\Controllers\Backend\AdvanceModule\TenantController;
-use App\Http\Controllers\Backend\AllSeoController;
+use App\Http\Controllers\Backend\SeoPluginController;
 use App\Http\Controllers\Backend\Auth\AuthController;
 use App\Http\Controllers\Backend\Blogger\BlogCategoryController;
 use App\Http\Controllers\Backend\Blogger\BlogController;
@@ -36,7 +36,11 @@ Route::prefix('admin')->as('admin.')->group(function () {
 
         // advance module routes
         Route::resource('tenant', TenantController::class);
+
+        // team member module routes
         Route::resource('team', TeamController::class);
+
+        // roles & permissions module routes
         Route::resource('role', RoleController::class);
 
         // blogging module routes
@@ -67,7 +71,14 @@ Route::prefix('admin')->as('admin.')->group(function () {
 
         // setting module routes
         Route::resource('setting', SettingController::class);
-        Route::resource('seo-plugin', AllSeoController::class);
+
+        // Social media module routes
+        Route::controller(SeoPluginController::class)->prefix('seo-plugin')->as('seo-plugin.')->group(function () {
+            Route::get('{type}', 'index')->name('index');
+            Route::get('{type}/{id}/edit', 'edit')->name('edit');
+            Route::post('{type}/{id}', 'update')->name('update');
+            // -------
+        });
     });
 
     // ------------- laravel file manager

@@ -140,17 +140,45 @@ return [
 
     // Global SEO Config menu
     [
-        'title' => 'Seo Config',
+        'title' => 'All Seo Config',
         'icon' => 'fa-solid fa-rss',
         'can' => ['seo-setting'],
 
         'children' => [
             [
+                'name' => 'Brand',
+                'route' => 'admin.seo-plugin.index',
+                'active' => 'admin.seo-plugin.index',
+                'params' => 'brand',
+                'can' => [],
+            ],
+            [
+                'name' => 'Categories',
+                'route' => 'admin.seo-plugin.index',
+                'active' => 'admin.seo-plugin.index',
+                'params' => 'category',
+                'can' => [],
+            ],
+            [
                 'name' => 'Product',
-                'route' => 'admin.setting.edit',
-                'active' => 'admin.setting.edit',
-                'params' => 'global',
-                'can' => ['global-setting'],
+                'route' => 'admin.seo-plugin.index',
+                'active' => 'admin.seo-plugin.index',
+                'params' => 'product',
+                'can' => [],
+            ],
+            [
+                'name' => 'Blog Categories',
+                'route' => 'admin.seo-plugin.index',
+                'active' => 'admin.seo-plugin.index',
+                'params' => 'blogcategory',
+                'can' => [],
+            ],
+            [
+                'name' => 'Blogs',
+                'route' => 'admin.seo-plugin.index',
+                'active' => 'admin.seo-plugin.index',
+                'params' => 'blog',
+                'can' => [],
             ],
         ],
     ],
