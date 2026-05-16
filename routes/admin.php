@@ -3,10 +3,10 @@
 use App\Http\Controllers\Backend\AdvanceModule\RoleController;
 use App\Http\Controllers\Backend\AdvanceModule\TeamController;
 use App\Http\Controllers\Backend\AdvanceModule\TenantController;
-use App\Http\Controllers\Backend\SeoPluginController;
 use App\Http\Controllers\Backend\Auth\AuthController;
 use App\Http\Controllers\Backend\Blogger\BlogCategoryController;
 use App\Http\Controllers\Backend\Blogger\BlogController;
+use App\Http\Controllers\Backend\Blogger\PageController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\Product\BrandController;
 use App\Http\Controllers\Backend\Product\CategoryController;
@@ -14,6 +14,7 @@ use App\Http\Controllers\Backend\Product\OptionController;
 use App\Http\Controllers\Backend\Product\OptionValueController;
 use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\Product\VariantController;
+use App\Http\Controllers\Backend\SeoPluginController;
 use App\Http\Controllers\Backend\SettingController;
 use Illuminate\Support\Facades\Route;
 use UniSharp\LaravelFilemanager\Lfm;
@@ -21,7 +22,7 @@ use UniSharp\LaravelFilemanager\Lfm;
 // Auth routes
 Route::prefix('admin')->as('admin.')->group(function () {
     Route::controller(AuthController::class)->group(function () {
-        Route::get('login', 'login')->name('login');
+        Route::get('/', 'login')->name('login');
         Route::post('try-login', 'tryLogin')->name('try_login');
         Route::get('forgot-password', 'forgotPassword')->name('forgot_password');
     });
@@ -46,6 +47,9 @@ Route::prefix('admin')->as('admin.')->group(function () {
         // blogging module routes
         Route::resource('blog-category', BlogCategoryController::class);
         Route::resource('blog', BlogController::class);
+
+        // pages routes
+        Route::resource('page', PageController::class);
 
         // product module routes
         Route::resource('brand', BrandController::class);

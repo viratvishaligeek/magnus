@@ -180,6 +180,13 @@ return [
                 'params' => 'blog',
                 'can' => [],
             ],
+            [
+                'name' => 'Pages',
+                'route' => 'admin.seo-plugin.index',
+                'active' => 'admin.seo-plugin.index',
+                'params' => 'page',
+                'can' => [],
+            ],
         ],
     ],
 

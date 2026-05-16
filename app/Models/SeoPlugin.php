@@ -16,31 +16,20 @@ class SeoPlugin extends Model
      * @var list<string>
      */
     protected $fillable = [
-
         'tenant_id',
         'meta_title',
         'meta_description',
         'meta_keywords',
         'meta_author',
         'meta_robots',
-        'slug',
-        'canonical_tag',
         'og_title',
         'og_description',
-        'og_type',
         'og_url',
         'og_image',
-        'og_site',
-        'og_locale',
-        'og_video',
-        'og_audio',
-        'twitter_card',
-        'twitter_site',
         'twitter_title',
         'twitter_description',
         'twitter_image',
         'twitter_url',
-        'indexing_switch',
         'schema',
 
     ];
@@ -57,5 +46,9 @@ class SeoPlugin extends Model
 
     protected $hidden = [
         'tenant_id',
+    ];
+
+    protected $casts = [
+        'schema' => 'array',
     ];
 }
