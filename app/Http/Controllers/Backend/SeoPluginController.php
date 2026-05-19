@@ -30,7 +30,7 @@ class SeoPluginController extends Controller
     public function index(Request $request, string $type)
     {
         $model = $this->getModel($type);
-        $pageName = Str::headline($type) . ' SEO Portfolio';
+        $pageName = Str::headline($type).' SEO Portfolio';
 
         $data = $model::with('seo')
             ->when($request->filled('search'), function ($query) use ($request) {
@@ -45,7 +45,7 @@ class SeoPluginController extends Controller
     {
         $model = $this->getModel($type);
         $data = $model::with('seo')->findOrFail($id);
-        $pageName = "Optimize: " . ($data->name ?? $data->title);
+        $pageName = 'Optimize: '.($data->name ?? $data->title);
 
         return view('backend.seo.edit', compact('data', 'type', 'pageName'));
     }
@@ -69,7 +69,7 @@ class SeoPluginController extends Controller
             'twitter_description' => 'nullable|string|max:200',
             'twitter_image' => 'nullable|string',
             'schema' => 'nullable|json',
-            'indexing_switch' => 'nullable|boolean'
+            'indexing_switch' => 'nullable|boolean',
         ]);
 
         $validated['indexing_switch'] = $request->has('indexing_switch') ? 1 : 0;

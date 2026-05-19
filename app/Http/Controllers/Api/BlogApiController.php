@@ -12,7 +12,7 @@ class BlogApiController extends Controller
     public function index(Request $request)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json(['status' => 400, 'message' => 'Tenant Details is required'], 400);
         }
         $perPage = (int) ($request->per_page ?? 20);
@@ -28,6 +28,7 @@ class BlogApiController extends Controller
                     'category:id,name',
                     'author:id,name',
                     'publisher:id,name',
+                    'seo',
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->paginate($perPage);
@@ -38,23 +39,23 @@ class BlogApiController extends Controller
             'message' => 'success',
             'data' => $data->items(),
             'pagination' => [
-                'total'        => $data->total(),
-                'per_page'     => $data->perPage(),
+                'total' => $data->total(),
+                'per_page' => $data->perPage(),
                 'current_page' => $data->currentPage(),
-                'last_page'    => $data->lastPage(),
+                'last_page' => $data->lastPage(),
                 'next_page_url' => $data->nextPageUrl(),
                 'prev_page_url' => $data->previousPageUrl(),
             ],
         ], 200);
     }
 
-    public function categoryBlog(Request $request, $categoryId)
+    public function categoryBlog(Request $request, string $categoryId)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json(['status' => 400, 'message' => 'Tenant Details is required'], 400);
         }
-        if (!$categoryId) {
+        if (! $categoryId) {
             return response()->json(['status' => 400, 'message' => 'Category Details is required'], 400);
         }
         $perPage = (int) ($request->per_page ?? 20);
@@ -71,6 +72,7 @@ class BlogApiController extends Controller
                     'category:id,name',
                     'author:id,name',
                     'publisher:id,name',
+                    'seo',
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->paginate($perPage);
@@ -81,10 +83,10 @@ class BlogApiController extends Controller
             'message' => 'success',
             'data' => $data->items(),
             'pagination' => [
-                'total'        => $data->total(),
-                'per_page'     => $data->perPage(),
+                'total' => $data->total(),
+                'per_page' => $data->perPage(),
                 'current_page' => $data->currentPage(),
-                'last_page'    => $data->lastPage(),
+                'last_page' => $data->lastPage(),
                 'next_page_url' => $data->nextPageUrl(),
                 'prev_page_url' => $data->previousPageUrl(),
             ],

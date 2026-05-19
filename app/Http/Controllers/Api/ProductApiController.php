@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\OptionValue;
 use App\Models\Product;
 use App\Models\ProductFaq;
 use Illuminate\Http\Request;
@@ -15,10 +16,10 @@ class ProductApiController extends Controller
     public function featuredProducts(Request $request)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Tenant Details is required'
+                'message' => 'Tenant Details is required',
             ], 400);
         }
         $cacheKey = "featured_products_t{$tenantId}";
@@ -53,7 +54,8 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->limit(15)
@@ -72,10 +74,10 @@ class ProductApiController extends Controller
     public function topProducts(Request $request)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Tenant Details is required'
+                'message' => 'Tenant Details is required',
             ], 400);
         }
         $cacheKey = "top_products_t{$tenantId}";
@@ -110,7 +112,8 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->limit(15)
@@ -129,10 +132,10 @@ class ProductApiController extends Controller
     public function recentProducts(Request $request)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Tenant Details is required'
+                'message' => 'Tenant Details is required',
             ], 400);
         }
         $cacheKey = "recent_products_t{$tenantId}";
@@ -166,7 +169,8 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ])
                 ->latest('updated_at')
                 ->limit(15)
@@ -185,10 +189,10 @@ class ProductApiController extends Controller
     public function category(Request $request)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Tenant Details is required'
+                'message' => 'Tenant Details is required',
             ], 400);
         }
         $cacheKey = "product_categories_t{$tenantId}";
@@ -205,6 +209,7 @@ class ProductApiController extends Controller
                     'description',
                     'status',
                 ])
+                ->with('seo')
                 ->where('tenant_id', $tenantId)
                 ->withCount('products')
                 ->where('status', 'active')
@@ -237,10 +242,10 @@ class ProductApiController extends Controller
             ->where('slug', $slug)
             ->first();
 
-        if (!$category) {
+        if (! $category) {
             return response()->json([
                 'status' => 404,
-                'message' => 'Category not found'
+                'message' => 'Category not found',
             ], 404);
         }
 
@@ -274,14 +279,15 @@ class ProductApiController extends Controller
                     'brand_id',
                     'has_variation',
                     'status',
-                    'tenant_id'
+                    'tenant_id',
                 ])
                 ->with([
                     'category:id,name',
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ])
                 ->latest('updated_at')
                 ->paginate($perPage, ['*'], 'page', $page);
@@ -301,109 +307,33 @@ class ProductApiController extends Controller
             ],
         ]);
     }
-    // public function categoryProducts(Request $request, $slug)
-    // {
-    //     $tenantId = $request->tenant_id;
-    //     if (!$tenantId) {
-    //         return response()->json([
-    //             'status' => 400,
-    //             'message' => 'Tenant Details is required'
-    //         ], 400);
-    //     }
-
-    //     $categoryData = Category::where('slug', $slug)->first();
-    //     if (!$categoryData) {
-    //         return response()->json([
-    //             'status' => 400,
-    //             'message' => 'Category Not Found'
-    //         ], 400);
-    //     }
-    //     $categoryId = $categoryData->id;
-    //     $perPage = (int) ($request->per_page ?? 15);
-    //     $page = (int) ($request->page ?? 1);
-    //     // safety cap
-    //     $perPage = min($perPage, 50);
-    //     $cacheKey = "category_products_t{$tenantId}_cat{$categoryId}_p{$page}_pp{$perPage}";
-    //     $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId, $categoryId, $perPage, $page) {
-    //         return Product::withoutGlobalScope('tenant_filter')
-    //             ->select([
-    //                 'id',
-    //                 'name',
-    //                 'slug',
-    //                 'category_id',
-    //                 'sub_category_id',
-    //                 'gst',
-    //                 'mrp',
-    //                 'sell_price',
-    //                 'discount_type',
-    //                 'discount',
-    //                 'stock',
-    //                 'stock_status',
-    //                 'short_description',
-    //                 'top_product',
-    //                 'featured_product',
-    //                 'brand_id',
-    //                 'has_variation',
-    //                 'status',
-    //                 'tenant_id',
-    //             ])
-    //             ->where('tenant_id', $tenantId)
-    //             ->where(function ($q) use ($categoryId) {
-    //                 $q->where('category_id', $categoryId)
-    //                     ->orWhere('sub_category_id', $categoryId);
-    //             })
-    //             ->where('status', 'active')
-    //             ->with([
-    //                 'category:id,name',
-    //                 'subcategory:id,name',
-    //                 'brand:id,name',
-    //                 'images',
-    //                 'variants.images'
-    //             ])
-    //             ->orderBy('updated_at', 'desc')
-    //             ->paginate($perPage, ['*'], 'page', $page);
-    //     });
-    //     return response()->json([
-    //         'status' => 200,
-    //         'message' => 'success',
-    //         'data' => $data->items(),
-    //         'pagination' => [
-    //             'total' => $data->total(),
-    //             'per_page' => $data->perPage(),
-    //             'current_page' => $data->currentPage(),
-    //             'last_page' => $data->lastPage(),
-    //             'next_page_url' => $data->nextPageUrl(),
-    //             'prev_page_url' => $data->previousPageUrl(),
-    //         ],
-    //     ], 200);
-    // }
 
     // search function
     public function search(Request $request, $query)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Tenant Details is required'
+                'message' => 'Tenant Details is required',
             ], 400);
         }
         $query = trim($query);
         if (strlen($query) < 3) {
             return response()->json([
                 'status' => 422,
-                'message' => 'Search query must be at least 3 characters'
+                'message' => 'Search query must be at least 3 characters',
             ], 422);
         }
         if (preg_match('/\s/', $query)) {
             return response()->json([
                 'status' => 422,
-                'message' => 'Spaces are not allowed in search query'
+                'message' => 'Spaces are not allowed in search query',
             ], 422);
         }
         $limit = (int) ($request->limit ?? 5);
         $limit = min($limit, 50);
-        $cacheKey = "search_t{$tenantId}_q" . md5($query) . "_limit{$limit}";
+        $cacheKey = "search_t{$tenantId}_q".md5($query)."_limit{$limit}";
         $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $query, $limit) {
             return Product::withoutGlobalScope('tenant_filter')
                 ->select([
@@ -439,12 +369,14 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->limit($limit)
                 ->get();
         });
+
         return response()->json([
             'status' => 200,
             'message' => 'success',
@@ -457,10 +389,10 @@ class ProductApiController extends Controller
     public function productList(Request $request)
     {
         $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        if (! $tenantId) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Tenant Details is required'
+                'message' => 'Tenant Details is required',
             ], 400);
         }
         $perPage = (int) $request->per_page ?: 20;
@@ -495,7 +427,8 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ]);
             switch ($request->sort_by) {
                 case 'lowtohigh':
@@ -516,8 +449,10 @@ class ProductApiController extends Controller
                 default:
                     $query->orderBy('updated_at', 'desc');
             }
+
             return $query->paginate($perPage, ['*'], 'page', $request->page ?? 1);
         });
+
         return response()->json([
             'status' => 200,
             'message' => 'success',
@@ -534,7 +469,7 @@ class ProductApiController extends Controller
     }
 
     // product detail response function
-    public function productDetail(Request $request, $slug)
+    public function productDetail(Request $request, string $slug)
     {
         try {
             $product = Product::withoutGlobalScope('tenant_filter')
@@ -544,7 +479,7 @@ class ProductApiController extends Controller
                 ->firstOrFail();
             $reviewEligible = false;
             $filteredOptions = $this->getFilteredOptions($product);
-            $faq = ProductFaq::where('product_id', $product->id)
+            $faq = ProductFaq::query()->where('product_id', $product->id)
                 ->select('id', 'question', 'answer', 'created_at')->get();
             $review = [];
             $minPrice = null;
@@ -556,7 +491,7 @@ class ProductApiController extends Controller
                     $prices[] = $variant->sell_price;
                     $variantImages[] = $variant->images;
                 }
-                if (!empty($prices)) {
+                if (! empty($prices)) {
                     $minPrice = min($prices);
                     $maxPrice = max($prices);
                 }
@@ -619,11 +554,13 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
-                    'variants.images'
+                    'variants.images',
+                    'seo',
                 ])
                 ->inRandomOrder()
                 ->limit(10)
                 ->get();
+
             // Return the response
             return response()->json(
                 [
@@ -645,7 +582,7 @@ class ProductApiController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Unable to fetch product details',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -661,30 +598,33 @@ class ProductApiController extends Controller
             }
         }
         $valueIds = array_unique($valueIds);
-        $values = \App\Models\OptionValue::whereIn('id', $valueIds)
+        $values = OptionValue::query()->whereIn('id', $valueIds)
             ->get()
             ->keyBy('id');
         foreach ($product->variants as $variant) {
             foreach ($variant->options as $option) {
                 $valueId = $option->pivot->value_id;
-                if (!isset($values[$valueId])) continue;
+                if (! isset($values[$valueId])) {
+                    continue;
+                }
                 $value = $values[$valueId];
-                if (!isset($options[$option->id])) {
+                if (! isset($options[$option->id])) {
                     $options[$option->id] = [
                         'id' => $option->id,
                         'name' => $option->name,
-                        'values' => []
+                        'values' => [],
                     ];
                 }
                 $options[$option->id]['values'][$value->id] = [
                     'id' => $value->id,
-                    'value' => $value->name
+                    'value' => $value->name,
                 ];
             }
         }
         foreach ($options as &$opt) {
             $opt['values'] = array_values($opt['values']);
         }
+
         return array_values($options);
     }
 }

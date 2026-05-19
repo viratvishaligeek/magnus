@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Blog extends Model
 {
-    use BelongsToTenant, HasFactory, SoftDeletes, HasSeo;
+    use BelongsToTenant, HasFactory, HasSeo, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

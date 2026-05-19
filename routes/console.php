@@ -30,7 +30,7 @@ Artisan::command('permissions:setup', function () {
         'role-add',
         'role-delete',
 
-        // blog-category | blog permissions
+        // blog-category | blog permissions | page permissions
         'blog_category-browse',
         'blog_category-read',
         'blog_category-edit',
@@ -42,6 +42,12 @@ Artisan::command('permissions:setup', function () {
         'blog-edit',
         'blog-add',
         'blog-delete',
+        // ---------
+        'page-browse',
+        'page-read',
+        'page-edit',
+        'page-add',
+        'page-delete',
 
         // brand | category | options | option_value | product Permissions
         'brand-browse',
@@ -102,7 +108,7 @@ Artisan::command('permissions:setup', function () {
     $superadminRole = Role::create(['name' => 'superadmin', 'guard_name' => 'admin']);
     $superadminRole->syncPermissions(Permission::all());
     // Assign the 'superadmin' role to the user with ID 73 (example user)
-    $user = Admin::find(1); // Replace with the actual user ID
+    $user = Admin::query()->find(1); // Replace with the actual user ID
     if ($user) {
         $user->assignRole('superadmin');
         $this->info('User assigned the superadmin role successfully.');

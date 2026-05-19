@@ -59,6 +59,12 @@ return [
                 'active' => 'admin.blog.*',
                 'can' => ['blog-browse'],
             ],
+            [
+                'name' => 'Pages',
+                'route' => 'admin.page.index',
+                'active' => 'admin.page.*',
+                'can' => ['page-browse'],
+            ],
         ],
     ],
 

@@ -12,7 +12,6 @@ use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class PageController extends Controller
-
 {
     public function __construct()
     {
@@ -42,7 +41,9 @@ class PageController extends Controller
             }
 
             return DataTables::eloquent($query)->addIndexColumn()->editColumn('name', function ($row) {
-                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
+                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+            })->editColumn('tenant', function ($row) {
+                return $row->tenant->name;
             })->editColumn('status', function ($row) {
                 return GetStatusBadge($row->status);
             })->editColumn('created_at', function ($row) {
@@ -51,15 +52,15 @@ class PageController extends Controller
                 $id = encrypt($row->id);
                 $btn = '<div class="d-flex">';
                 if (Auth::user()->can('page-read') || Auth::user()->can('page-edit')) {
-                    $btn .= '<a href="' . route('admin.page.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                    $btn .= '<a href="'.route('admin.page.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
                 }
                 if (Auth::user()->can('page-edit')) {
-                    $btn .= '<a href="' . route('admin.page.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                    $btn .= '<a href="'.route('admin.page.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
                 }
                 if (Auth::user()->can('page-delete')) {
-                    $btn .= '<form method="POST" action="' . route('admin.page.destroy', $id) . '" class="m-0 p-0 delete-form">
-                ' . csrf_field() . '
-                ' . method_field('DELETE') . '
+                    $btn .= '<form method="POST" action="'.route('admin.page.destroy', $id).'" class="m-0 p-0 delete-form">
+                '.csrf_field().'
+                '.method_field('DELETE').'
                 <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                     <i class="fa fa-trash text-danger"></i>
                 </button>
@@ -76,9 +77,9 @@ class PageController extends Controller
 
     public function create()
     {
-        $pageName = 'Create Page Post';
+        $pageName = 'Create Page';
 
-        return view('backend.page.create', compact('pageName', 'categories', 'authors', 'publishers'));
+        return view('backend.page.create', compact('pageName'));
     }
 
     public function store(Request $request)
@@ -98,7 +99,7 @@ class PageController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 
@@ -115,7 +116,7 @@ class PageController extends Controller
 
     public function edit(string $id)
     {
-        $pageName = 'Edit Page Post';
+        $pageName = 'Edit Page';
         $data = Page::findOrFail($this->decryptId($id));
 
         return view('backend.page.edit', compact('pageName', 'data'));
@@ -139,7 +140,7 @@ class PageController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 
