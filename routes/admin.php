@@ -84,7 +84,6 @@ Route::prefix('admin')->as('admin.')->group(function () {
             // -------
         });
     });
-
     // ------------- laravel file manager
     Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['auth:admin']], function () {
         Lfm::routes();
